@@ -12,6 +12,7 @@ var config = {
 var game = new Phaser.Game(config.width,
   config.height, config.renderer,
   config.element, config.handlers);
+var camera, background, enemy, player, cursors, car_speed;
 
 function preload() {
   game.load.image('BG__dragstrip', 'assets/bg/dragstrip.png');
@@ -20,36 +21,55 @@ function preload() {
 }
 
 function create() {
-  game.add.sprite(0, 0, 'BG__dragstrip');
+  camera = new Phaser.Camera(game, null, 0, 0, config.width, config.height);
+  background = game.add.sprite(0, 0, 'BG__dragstrip');
   enemy = game.add.sprite(0, 239, 'CAR__enemy');
   player = game.add.sprite(0, 377, 'CAR__player');
-  game.physics.arcade.enable(player);
-
-
   cursors = game.input.keyboard.createCursorKeys();
 
 
-  console.log('create');
+  game.physics.arcade.enable(player);
+  player.body.velocity.x = 0;
+  player.body.maxVelocity.x = 500;
+  camera.follow(player);
+
 }
 
 function update() {
-  //  Reset the players velocity (movement)
-  player.body.velocity.x = 0;
+  car_speed = player.body.velocity.x;
+  controlKeys();
+}
 
+function controlKeys(){
   if (cursors.up.isDown){
-      //  Move to the left
-      player.body.velocity.x = 150;
-
-      player.animations.play('left');
+      moveForward();
   }else if (cursors.down.isDown){
-      //  Move to the right
-      player.body.velocity.x = -150;
-
-      player.animations.play('right');
+      moveBackward();
   }else{
-      //  Stand still
-      player.animations.stop();
-      // player.frame = 4;
+      neutral();
   }
-  console.log('update');
+}
+
+function moveForward(){
+  if (car_speed < -50){
+    player.body.acceleration.x = 150;
+  }else{
+    player.body.acceleration.x = 50;
+  }
+  player.animations.play('left');
+}
+
+function moveBackward(){
+  if (car_speed > 50){
+    player.body.acceleration.x = -150;
+  }else{
+    player.body.acceleration.x = -50;
+  }
+  player.animations.play('right');
+}
+
+function neutral(){
+  player.body.acceleration.x = car_speed * -1;
+  player.animations.stop();
+  // player.frame = 4;
 }
