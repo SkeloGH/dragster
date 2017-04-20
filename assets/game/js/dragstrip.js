@@ -15,10 +15,11 @@ define(function(){
     player: {
       // 3.59 kmh = 1 m/s
       maxVelocity: kmhToPxs(150),//4200 px/s ->
-      maxRwdVelocity: -50,
+      maxRwdVelocity: kmhToPxs(50) * -1,
       maxAccelerationFwd: 150,
       maxAccelerationRwd: -150,
-      maxShifts: 4
+      maxShifts: 4,
+      shiftWaitMs: 100
     },
     world: {
       width: meterToPx(402.34),
@@ -122,7 +123,9 @@ define(function(){
     }
 
     if (currentShift < 0){
-      acceleration = cfg[targetObj].maxAccelerationRwd;
+      if (objectSpeed >= cfg[targetObj].maxRwdVelocity) {
+        acceleration = cfg[targetObj].maxAccelerationRwd;
+      }
     }
 
     return acceleration;
@@ -137,7 +140,16 @@ define(function(){
 
   function brake(targetObj){
     var character = characters[targetObj];
-    character.body.acceleration.x = character.body.velocity.x * -1;
+    var objectSpeed = character.body.velocity.x;
+    var acceleration = character.body.velocity.x * -1;
+
+    if (objectSpeed > 0 && objectSpeed < 90 ||
+      objectSpeed < 0 && objectSpeed > -90) {
+      acceleration = 0;
+      characters.player.body.velocity.x = 0;
+    }
+
+    character.body.acceleration.x = acceleration;
     character.animations.play('right');
   }
 
@@ -160,7 +172,7 @@ define(function(){
         // console.log(shift_text);
         shift_text.textContent = ""+states[targetObj].currentShift;
       }
-    }, 100);
+    }, cfg.player.shiftWaitMs);
   }
 
   function _shiftDown(targetObj){
@@ -174,7 +186,7 @@ define(function(){
         // console.log(shift_text);
         shift_text.textContent = states[targetObj].currentShift;
       }
-    }, 100);
+    }, cfg.player.shiftWaitMs);
   }
 
   return {init: init};
