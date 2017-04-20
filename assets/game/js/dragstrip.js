@@ -116,9 +116,11 @@ define(function(){
     var objectSpeed   = character.body.velocity.x;
     var acceleration  = 0;
     var accelRate     = cfg[targetObj].maxVelocity / cfg[targetObj].maxShifts;
+    var maxShiftSpeed = accelRate * currentShift;
 
     if (currentShift > 0 &&
-      objectSpeed < cfg[targetObj].maxVelocity) {
+      objectSpeed < cfg[targetObj].maxVelocity &&
+      objectSpeed <= maxShiftSpeed) {
       acceleration  = accelRate * currentShift;
     }
 
