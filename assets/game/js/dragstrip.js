@@ -1,5 +1,5 @@
 define(function(){
-  // var cfg, characters, states, game, playerCam, background, enemy, player, cursors, shift_text;
+  var cfg, characters, states, game, playerCam, background, enemy, player, cursors, shift_text;
 
   cfg = {
     width: window.document.body.scrollWidth,
@@ -14,15 +14,14 @@ define(function(){
     },
     player: {
       // 3.59 kmh = 1 m/s
-      maxVelocity: kmhToPxs(150),//4200 px/s ->
-      maxRwdVelocity: kmhToPxs(50) * -1,
-      maxAccelerationFwd: 150,
+      topSpeed: kmHrToPxSec(150),//4200 px/s ->
+      topRwdSpeed: kmHrToPxSec(50) * -1,
       maxAccelerationRwd: -150,
-      maxShifts: 4,
+      maxShifts: 6,
       shiftWaitMs: 100
     },
     world: {
-      width: meterToPx(402.34),
+      width: metersToPx(402.34),
       height: 512
     }
   };
@@ -31,19 +30,23 @@ define(function(){
     player: {
       currentShift: 0,
       _shifting: null
+    },
+    timer: {
+      start : 0,
+      finish : 0
     }
   };
 
-  function meterToPx(value){
+  function metersToPx(value){
     // 1m == 100px
-    var mToPx = 1 * 100;
-    return (value * mToPx) / 1;
+    var meterAsPx = 1 * 100;
+    return (value * meterAsPx) / 1;
   }
 
-  function kmhToPxs(value){
+  function kmHrToPxSec(value){
     // 1kmh == .28ms == 28pxs
-    var kmhToPxs = 0.28*100;
-    return (value * kmhToPxs) / 1;
+    var kmHrAsPxSec = 0.28*100;
+    return (value * kmHrAsPxSec) / 1;
   }
 
   function init(){
@@ -77,12 +80,31 @@ define(function(){
     game.camera.follow(characters.player);
 
     characters.player.body.velocity.x    = 0;
-    characters.player.body.maxVelocity.x = cfg.player.maxVelocity;
+    characters.player.body.maxVelocity.x = cfg.player.topSpeed;
 
   }
 
   function update() {
+    if (characters.player.body.x > 0 &&
+      characters.player.body.x < cfg.world.width &&
+      states.timer.start === 0 && states.timer.finish === 0) {
+        timer('start');
+    }
+    if (characters.player.body.x >= cfg.world.width &&
+      states.timer.start !== 0 && states.timer.finish === 0) {
+        timer('finish');
+    }
     _handleKeyPress();
+  }
+
+  function timer(action){
+    var total;
+    states.timer[action] = Date.now();
+    if (action == 'finish') {
+      total = states.timer.finish - states.timer.start;
+      console.log(total);
+      return total;
+    }
   }
 
   function render(){
@@ -115,17 +137,17 @@ define(function(){
     var currentShift  = getCurrentShift(targetObj);
     var objectSpeed   = character.body.velocity.x;
     var acceleration  = 0;
-    var accelRate     = cfg[targetObj].maxVelocity / cfg[targetObj].maxShifts;
+    var accelRate     = cfg[targetObj].topSpeed / cfg[targetObj].maxShifts;
     var maxShiftSpeed = accelRate * currentShift;
 
     if (currentShift > 0 &&
-      objectSpeed < cfg[targetObj].maxVelocity &&
+      objectSpeed < cfg[targetObj].topSpeed &&
       objectSpeed <= maxShiftSpeed) {
       acceleration  = accelRate * currentShift;
     }
 
     if (currentShift < 0){
-      if (objectSpeed >= cfg[targetObj].maxRwdVelocity) {
+      if (objectSpeed >= cfg[targetObj].topRwdSpeed) {
         acceleration = cfg[targetObj].maxAccelerationRwd;
       }
     }
