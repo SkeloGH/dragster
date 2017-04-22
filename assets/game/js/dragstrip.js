@@ -1,5 +1,7 @@
 define(function(){
-  var cfg, characters, states, game, playerCam, background, enemy, player, cursors, shift_text;
+  require(['playercar','gearbox'], init);
+  var cfg, characters, states, game, playerCam, background,
+    enemy, player, cursors, shift_text;
 
   cfg = {
     width: window.document.body.scrollWidth,
@@ -12,14 +14,6 @@ define(function(){
       update: update,
       render: render
     },
-    player: {
-      // 3.59 kmh = 1 m/s
-      topSpeed: kmHrToPxSec(150),//4200 px/s ->
-      topRwdSpeed: kmHrToPxSec(50) * -1,
-      maxAccelerationRwd: -150,
-      maxShifts: 6,
-      shiftWaitMs: 100
-    },
     world: {
       width: metersToPx(402.34),
       height: 512
@@ -27,10 +21,6 @@ define(function(){
   };
 
   states = {
-    player: {
-      currentShift: 0,
-      _shifting: null
-    },
     timer: {
       start : 0,
       finish : 0
@@ -71,30 +61,35 @@ define(function(){
     background  = game.add.tileSprite(0, 0, cfg.world.width, cfg.world.height, 'BG__dragstrip');
     cursors     = game.input.keyboard.createCursorKeys();
     characters  = {
-      'player': game.add.sprite(0, 377, 'CAR__player'),
       'enemy': game.add.sprite(0, 239, 'CAR__enemy')
     };
+    gearbox = new Gearbox({ shifts: 6, shiftingDelay: 100 });
+    player  = new PlayerCar({
+      sprite: game.add.sprite(0, 377, 'CAR__player'),
+      gearbox: gearbox,
+      topSpeed: kmHrToPxSec(150),
+      topRwdSpeed: kmHrToPxSec(-50)
+    });
 
     game.world.setBounds(0, 0, cfg.world.width, cfg.world.height);
-    game.physics.arcade.enable(characters.player);
-    game.camera.follow(characters.player);
-
-    characters.player.body.velocity.x    = 0;
-    characters.player.body.maxVelocity.x = cfg.player.topSpeed;
-
+    game.physics.arcade.enable(player.car);
+    game.camera.follow(player.car);
   }
 
   function update() {
-    if (characters.player.body.x > 0 &&
-      characters.player.body.x < cfg.world.width &&
-      states.timer.start === 0 && states.timer.finish === 0) {
-        timer('start');
-    }
-    if (characters.player.body.x >= cfg.world.width &&
-      states.timer.start !== 0 && states.timer.finish === 0) {
-        timer('finish');
-    }
-    _handleKeyPress();
+    player.update(cursors, function(){
+      var carPos     = this.car.body.x;
+      var worldLimit = cfg.world.width;
+      var startTime  = states.timer.start;
+      var finishTime = states.timer.finish;
+
+      if (carPos > 0 && carPos < worldLimit && !startTime && !finishTime) {
+          timer('start');
+      }
+      if (carPos >= worldLimit && !!startTime && !finishTime) {
+          timer('finish');
+      }
+    });
   }
 
   function timer(action){
@@ -109,108 +104,7 @@ define(function(){
 
   function render(){
     game.debug.cameraInfo(game.camera, 32, 32);
-    game.debug.spriteCoords(characters.player, 32, 500);
-  }
-
-  function _handleKeyPress(){
-    if (cursors.up.isDown){
-      _shiftUp('player');
-    }else if (cursors.down.isDown){
-      _shiftDown('player');
-    }else if (!cursors.up.isDown && !cursors.down.isDown){
-        _neutral('player');
-    }
-
-    if (cursors.right.isDown){
-        accelerate('player');
-    }else if (cursors.left.isDown){
-        brake('player');
-    }
-  }
-
-  function getCurrentShift(targetObj){
-    return states[targetObj].currentShift;
-  }
-
-  function getAcceleration(targetObj){
-    var character     = characters[targetObj];
-    var currentShift  = getCurrentShift(targetObj);
-    var objectSpeed   = character.body.velocity.x;
-    var acceleration  = 0;
-    var accelRate     = cfg[targetObj].topSpeed / cfg[targetObj].maxShifts;
-    var maxShiftSpeed = accelRate * currentShift;
-
-    if (currentShift > 0 &&
-      objectSpeed < cfg[targetObj].topSpeed &&
-      objectSpeed <= maxShiftSpeed) {
-      acceleration  = accelRate * currentShift;
-    }
-
-    if (currentShift < 0){
-      if (objectSpeed >= cfg[targetObj].topRwdSpeed) {
-        acceleration = cfg[targetObj].maxAccelerationRwd;
-      }
-    }
-
-    return acceleration;
-  }
-
-  function accelerate(targetObj){
-    var character = characters[targetObj];
-    character.body.acceleration.x = getAcceleration(targetObj);
-    character.animations.play('left');
-  }
-
-
-  function brake(targetObj){
-    var character = characters[targetObj];
-    var objectSpeed = character.body.velocity.x;
-    var acceleration = character.body.velocity.x * -1;
-
-    if (objectSpeed > 0 && objectSpeed < 90 ||
-      objectSpeed < 0 && objectSpeed > -90) {
-      acceleration = 0;
-      characters.player.body.velocity.x = 0;
-    }
-
-    character.body.acceleration.x = acceleration;
-    character.animations.play('right');
-  }
-
-  function _neutral(targetObj){
-    var character = characters[targetObj];
-    var deccel_rate = character.body.velocity.x / cfg[targetObj].maxShifts;
-    character.body.acceleration.x = deccel_rate * -1;
-    character.animations.stop();
-    // targetObj.frame = 4;
-  }
-
-  function _shiftUp(targetObj){
-    if (states[targetObj]._shifting !== null) {
-      clearTimeout(states[targetObj]._shifting);
-      states[targetObj]._shifting = null;
-    }
-    states[targetObj]._shifting = setTimeout(function(){
-      if (states[targetObj].currentShift < cfg[targetObj].maxShifts) {
-        states[targetObj].currentShift++;
-        // console.log(shift_text);
-        shift_text.textContent = ""+states[targetObj].currentShift;
-      }
-    }, cfg.player.shiftWaitMs);
-  }
-
-  function _shiftDown(targetObj){
-    if (states[targetObj]._shifting !== null) {
-      clearTimeout(states[targetObj]._shifting);
-      states[targetObj]._shifting = null;
-    }
-    states[targetObj]._shifting = setTimeout(function(){
-      if (states[targetObj].currentShift > -1) {
-        states[targetObj].currentShift--;
-        // console.log(shift_text);
-        shift_text.textContent = states[targetObj].currentShift;
-      }
-    }, cfg.player.shiftWaitMs);
+    game.debug.spriteCoords(player.car, 32, 500);
   }
 
   return {init: init};
