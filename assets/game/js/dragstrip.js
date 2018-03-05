@@ -27,18 +27,6 @@ define(function(){
     }
   };
 
-  function metersToPx(value){
-    // 1m == 100px
-    var meterAsPx = 1 * 100;
-    return (value * meterAsPx) / 1;
-  }
-
-  function kmHrToPxSec(value){
-    // 1kmh == .28ms == 28pxs
-    var kmHrAsPxSec = 0.28*100;
-    return (value * kmHrAsPxSec) / 1;
-  }
-
   function init(){
     game = new Phaser.Game(cfg.width,
       cfg.height, cfg.renderer,
@@ -50,7 +38,7 @@ define(function(){
     game.load.image('BG__dragstrip', '/assets/game/img/bg/dragstrip.png');
     game.load.image('CAR__player', '/assets/game/img/cars/phantom/car.png');
     game.load.image('CAR__enemy', '/assets/game/img/cars/phantom/car.png');
-
+    game.time.advancedTiming = true;
     // window.addEventListener('resize', function () {
     //   game.scale.setGameSize(window.document.body.scrollWidth, window.document.body.scrollHeight);
     // });
@@ -77,19 +65,34 @@ define(function(){
   }
 
   function update() {
-    player.update(cursors, function(){
-      var carPos     = this.car.body.x;
-      var worldLimit = cfg.world.width;
-      var startTime  = states.timer.start;
-      var finishTime = states.timer.finish;
+    checkTiming();
+    player.update(cursors);
+  }
 
-      if (carPos > 0 && carPos < worldLimit && !startTime && !finishTime) {
-          timer('start');
-      }
-      if (carPos >= worldLimit && !!startTime && !finishTime) {
-          timer('finish');
-      }
-    });
+  function checkTiming(){
+    var carPos, worldLimit, startTime, finishTime;
+    carPos     = player.car.body.x;
+
+    if (carPos > 0){
+      (function check(){
+        worldLimit = cfg.world.width;
+        startTime  = states.timer.start;
+        finishTime = states.timer.finish;
+
+        if (carPos < worldLimit && !startTime && !finishTime) {
+            timer('start');
+        }
+        if (carPos >= worldLimit && !!startTime && !finishTime) {
+            timer('finish');
+        }
+      })();
+    }
+  }
+
+  function render(){
+    game.debug.cameraInfo(game.camera, 32, 32);
+    game.debug.spriteCoords(player.car, 32, 500);
+    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
   }
 
   function timer(action){
@@ -102,10 +105,16 @@ define(function(){
     }
   }
 
-  function render(){
-    game.debug.cameraInfo(game.camera, 32, 32);
-    game.debug.spriteCoords(player.car, 32, 500);
+  function metersToPx(value){
+    // 1m == 100px
+    var meterAsPx = 1 * 100;
+    return (value * meterAsPx) / 1;
   }
 
-  return {init: init};
+  function kmHrToPxSec(value){
+    // 1kmh == .28ms == 28pxs
+    var kmHrAsPxSec = 0.28*100;
+    return (value * kmHrAsPxSec) / 1;
+  }
+
 });
