@@ -22,5 +22,4 @@ define("main", ['dragstrip', 'utils', 'playercar','gearbox'], function(){
   };
 
   stage = new DragStrip(cfg);
-  stage.init();
 });

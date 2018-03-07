@@ -1,7 +1,6 @@
 function DragStrip(config){
   "use strict";
   var self        = this;
-  this.game       = null;
   this.cursors    = null;
   this.characters = {};
   this.player     = null;
@@ -23,36 +22,35 @@ function DragStrip(config){
       enemy: {
         car: config.players.enemy.car
       }
+    },
+    handlers: {
+      preload: preload,
+      create: create,
+      update: update,
+      render: render
     }
   };
 
-  this.init = function init(){
-    self.cfg.handlers = {
-      preload: self.preload,
-      create: self.create,
-      update: self.update,
-      render: self.render
-    };
-    self.states = {
-      timer: {
-        start : 0,
-        finish : 0
-      }
-    };
-    self.game = new Phaser.Game(self.cfg.screen_width,
-      self.cfg.screen_height, self.cfg.renderer,
-      self.cfg.element, self.cfg.handlers);
+  this.states = {
+    timer: {
+      start : 0,
+      finish : 0
+    }
   };
 
-  this.preload = function preload() {
+  this.game = new Phaser.Game(this.cfg.screen_width,
+    this.cfg.screen_height, this.cfg.renderer,
+    this.cfg.element, this.cfg.handlers);
+
+  function preload() {
     self.game.stage.backgroundColor = '#dedede';
     self.game.load.image('stage__bg', self.cfg.world.stage_bg);
     self.game.load.image('player__car', self.cfg.players.main.car);
     self.game.load.image('enemy__car', self.cfg.players.enemy.car);
     self.game.time.advancedTiming = true;
-  };
+  }
 
-  this.create = function create() {
+  function create() {
     var cfg         = self.cfg;
     var shift_text  = new Phaser.Text(self.game, 0, 0, 'N', {color: '#000'});
     var background  = self.game.add.tileSprite(0, 0, cfg.world.width, cfg.world.height, 'stage__bg');
@@ -70,18 +68,18 @@ function DragStrip(config){
     self.game.world.setBounds(0, 0, cfg.world.width, cfg.world.height);
     self.game.physics.arcade.enable(self.player.car);
     self.game.camera.follow(self.player.car);
-  };
+  }
 
-  this.update = function update() {
+  function update() {
     self.checkTiming();
     self.player.update(self.cursors);
-  };
+  }
 
-  this.render = function render(){
+  function render(){
     self.game.debug.cameraInfo(self.game.camera, 32, 32);
     self.game.debug.spriteCoords(self.player.car, 32, 500);
     self.game.debug.text(self.game.time.fps || '--', 2, 14, "#00ff00");
-  };
+  }
 
   this.checkTiming = function checkTiming(){
     var carPos, worldLimit, startTime, finishTime, shouldCount, hasStarted, hasFinished;
