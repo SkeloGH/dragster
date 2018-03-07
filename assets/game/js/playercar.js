@@ -1,4 +1,5 @@
 function PlayerCar(config){
+  "use strict";
   this.car                = config.sprite;
   this.topSpeed           = config.topSpeed;
   this.topRwdSpeed        = config.topRwdSpeed;

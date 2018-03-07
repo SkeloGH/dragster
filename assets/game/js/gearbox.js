@@ -1,4 +1,5 @@
 function Gearbox(config){
+  "use strict";
   this._shifting    = null;
   this._shifts      = {
     "-1":"R", "0":"N",

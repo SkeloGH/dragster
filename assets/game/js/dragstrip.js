@@ -1,7 +1,8 @@
 define(function(){
+  "use strict";
   require(['playercar','gearbox'], init);
   var cfg, characters, states, game, playerCam, background,
-    enemy, player, cursors, shift_text;
+    enemy, player, gearbox, cursors, shift_text;
 
   cfg = {
     width: window.document.body.scrollWidth,

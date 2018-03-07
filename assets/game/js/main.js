@@ -1,3 +1,4 @@
+"use strict";
 // var dragstrip = require('dragstrip');
 // require.config({
 //     paths: {
