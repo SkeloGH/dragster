@@ -1,31 +1,37 @@
 function DragStrip(config){
   "use strict";
   var self        = this;
-  this.u_cfg      = config;
   this.game       = null;
   this.cursors    = null;
   this.characters = {};
   this.player     = null;
   this.states     = {};
-  this.cfg        = {};
+  this.cfg        = {
+    screen_width: config.screen_width,
+    screen_height: config.screen_height,
+    renderer: config.renderer,
+    element: config.element || '',
+    world: {
+      width: config.world.width,
+      height: config.world.height,
+      stage_bg: config.world.stage_bg
+    },
+    players: {
+      main: {
+        car: config.players.main.car
+      },
+      enemy: {
+        car: config.players.enemy.car
+      }
+    }
+  };
 
   this.init = function init(){
-    var u_cfg = self.u_cfg;
-    self.cfg   = {
-      screen_width: u_cfg.screen_width || 800,
-      screen_height: u_cfg.screen_height || 600,
-      renderer: u_cfg.renderer || Phaser.AUTO,
-      element: u_cfg.element || '',
-      world: {
-        width: u_cfg.world.width || metersToPx(402.34),
-        height: u_cfg.world.height || 512
-      },
-      handlers: {
-        preload: self.preload,
-        create: self.create,
-        update: self.update,
-        render: self.render
-      },
+    self.cfg.handlers = {
+      preload: self.preload,
+      create: self.create,
+      update: self.update,
+      render: self.render
     };
     self.states = {
       timer: {
@@ -40,25 +46,22 @@ function DragStrip(config){
 
   this.preload = function preload() {
     self.game.stage.backgroundColor = '#dedede';
-    self.game.load.image('BG__dragstrip', '/assets/game/img/bg/dragstrip.png');
-    self.game.load.image('CAR__player', '/assets/game/img/cars/phantom/car.png');
-    self.game.load.image('CAR__enemy', '/assets/game/img/cars/phantom/car.png');
+    self.game.load.image('stage__bg', self.cfg.world.stage_bg);
+    self.game.load.image('player__car', self.cfg.players.main.car);
+    self.game.load.image('enemy__car', self.cfg.players.enemy.car);
     self.game.time.advancedTiming = true;
-    // window.addEventListener('resize', function () {
-    //   game.scale.setGameSize(window.document.body.scrollWidth, window.document.body.scrollHeight);
-    // });
   };
 
   this.create = function create() {
     var cfg         = self.cfg;
     var shift_text  = new Phaser.Text(self.game, 0, 0, 'N', {color: '#000'});
-    var background  = self.game.add.tileSprite(0, 0, cfg.world.width, cfg.world.height, 'BG__dragstrip');
+    var background  = self.game.add.tileSprite(0, 0, cfg.world.width, cfg.world.height, 'stage__bg');
     self.cursors    = self.game.input.keyboard.createCursorKeys();
     self.characters = {
-      'enemy': self.game.add.sprite(0, 239, 'CAR__enemy')
+      'enemy': self.game.add.sprite(0, 239, 'enemy__car')
     };
     self.player  = new PlayerCar({
-      sprite: self.game.add.sprite(0, 377, 'CAR__player'),
+      sprite: self.game.add.sprite(0, 377, 'player__car'),
       gearbox: new Gearbox({ shifts: 6, shiftingDelay: 100 }),
       topSpeed: kmHrToPxSec(150),
       topRwdSpeed: kmHrToPxSec(-50)

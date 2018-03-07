@@ -8,7 +8,16 @@ define("main", ['dragstrip', 'utils', 'playercar','gearbox'], function(){
     element: '',
     world: {
       width: metersToPx(402.34),
-      height: 512
+      height: 512,
+      stage_bg: '/assets/game/img/bg/dragstrip.png'
+    },
+    players: {
+      main: {
+        car: '/assets/game/img/cars/phantom/car.png'
+      },
+      enemy: {
+        car: '/assets/game/img/cars/phantom/car.png'
+      }
     }
   };
 
