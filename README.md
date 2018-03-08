@@ -22,3 +22,7 @@ Note that you need to shift down for neutral & reverse.
 ## Implementation so far
 
 - Racing stage: basic elements rendering and gearboxed movement, you actually need to shift up to get the car into 1st gear, so no race, yet.
+
+## Follow up progress
+
+I've setup a Trello board to organize the activities and progress: https://trello.com/b/HSQprJjb/dragster-game
