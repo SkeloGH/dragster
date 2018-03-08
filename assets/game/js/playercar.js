@@ -1,18 +1,22 @@
-function PlayerCar(config){
-  "use strict";
-  this.sprite             = config.sprite;
-  this.max_speed          = config.max_speed;
-  this.gearbox            = config.gearbox;
-  this.max_speed_rwd      = -1400; // px/sec
-  this.max_accel_rwd      = -150;
+/*jshint esversion: 6*/
+"use strict";
+export class PlayerCar {
+  constructor(config){
+    this.sprite             = config.sprite;
+    this.max_speed          = config.max_speed;
+    this.gearbox            = config.gearbox;
+    this.max_speed_rwd      = -1400; // px/sec
+    this.max_accel_rwd      = -150;
+    return this;
+  }
 
-  this.accelerate = function accelerate(){
+  accelerate(){
     this.sprite.body.acceleration.x = this.getAcceleration();
     this.sprite.animations.play('left');
     return this;
-  };
+  }
 
-  this.brake = function brake(){
+  brake(){
     var objectSpeed   = this.sprite.body.velocity.x;
     var acceleration  = this.sprite.body.velocity.x * -1;
 
@@ -25,16 +29,16 @@ function PlayerCar(config){
     this.sprite.body.acceleration.x = acceleration;
     this.sprite.animations.play('right');
     return this;
-  };
+  }
 
-  this.coastNeutral = function coastNeutral(){
+  coastNeutral(){
     var deccel_rate = this.sprite.body.velocity.x / this.gearbox.total_shifts;
     this.sprite.body.acceleration.x = deccel_rate * -1;
     this.sprite.animations.stop();
     return this;
-  };
+  }
 
-  this.getAcceleration = function getAcceleration(){
+  getAcceleration(){
     var acceleration  = 0;
     var carSpeed      = this.sprite.body.velocity.x;
     var accelRate     = this.max_speed / this.gearbox.total_shifts;
@@ -51,9 +55,9 @@ function PlayerCar(config){
       }
     }
     return acceleration;
-  };
+  }
 
-  this.onUpdate = function update(cursors, callback){
+  onUpdate(cursors, callback){
     if (cursors.up.isDown){
       this.gearbox.shiftUp();
     }else if (cursors.down.isDown){
@@ -71,7 +75,5 @@ function PlayerCar(config){
       callback.call(this);
     }
     return this;
-  };
-
-  return this;
+  }
 }

@@ -1,14 +1,20 @@
-function DragStrip(config){
-  "use strict";
-  this.config = config;
-  this.states = {
-    timer: {
-      start : 0,
-      finish : 0
-    }
-  };
+/*jshint esversion: 6*/
+"use strict";
+export class DragStrip {
+  constructor(config){
+    this.config = config;
+    this.states = {
+      timer: {
+        start : 0,
+        finish : 0
+      }
+    };
 
-  this.onUpdate = function checkTiming(carPos){
+
+    return this;
+  }
+
+  onUpdate(carPos){
     var worldLimit = this.config.world.width;
     var startTime  = this.states.timer.start;
     var finishTime = this.states.timer.finish;
@@ -24,9 +30,9 @@ function DragStrip(config){
         this.timer('finish');
       }
     }
-  };
+  }
 
-  this.timer = function timer(action){
+  timer(action){
     var total;
     this.states.timer[action] = Date.now();
     if (action == 'finish') {
@@ -34,7 +40,5 @@ function DragStrip(config){
       console.log(total);
       return total;
     }
-  };
-
-  return this;
+  }
 }
