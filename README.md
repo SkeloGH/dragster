@@ -25,4 +25,4 @@ Note that you need to shift down for neutral & reverse.
 
 ## Follow up progress
 
-I've setup a Trello board to organize the activities and progress: https://trello.com/b/HSQprJjb/dragster-game
+I've setup a board to organize the activities and progress: https://github.com/SkeloGH/dragster/projects/1
