@@ -4,6 +4,8 @@
 
 A drag racing game based on phaser.js, running on node.
 
+https://dragsterio.herokuapp.com
+
 ## How to install/run the app:
 
 1. Clone the project.
