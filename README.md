@@ -39,3 +39,4 @@ I've setup a board to organize the activities and progress: https://github.com/S
 - per the above, no PR if no issue exists.
 - commit messages start with a verb: `added`, `removed`, `changed`, `fixed`, `merged`, `solved`, `improved`.
 - multiline commits are allowed, so long as they follow the above convention, bulleted.
+- Every push to master will deploy a new version of this app. Deploys happen automatically: be sure that this branch in GitHub is always in a deployable state and any tests have passed before you push.
