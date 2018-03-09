@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/SkeloGH/dragster/tree/master.svg?style=svg)](https://circleci.com/gh/SkeloGH/dragster/tree/master)
+
 # Dragster
 
 A drag racing game based on phaser.js, running on node.
