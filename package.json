@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "babel assets/game/js -d dist && npx webpack --config webpack.config.js",
-    "test": "echo \"No tests defined, yet\""
+    "test": "echo \"No tests defined, yet\"",
+    "deploy": "git push heroku master"
   },
   "author": "Aaron Gonzalez",
   "license": "MIT",
