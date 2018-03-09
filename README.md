@@ -12,6 +12,10 @@ A drag racing game based on phaser.js, running on node.
 
 It will run the app on port 3000, then you just go to `http://127.0.0.1:3000` and you'll be set!
 
+## Development
+
+For now, during development run `npm run build` before committing changes, this will be automated soon ;) .
+
 ## Controls
 
 - [UP arrow] shift up.
