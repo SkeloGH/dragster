@@ -4,6 +4,7 @@
   "description": "A drag racing game based on phaser.js, running on node.",
   "main": "app.js",
   "scripts": {
+    "build": "babel assets/game/js -d dist && npx webpack --config webpack.config.js",
     "test": "echo \"No tests defined, yet\""
   },
   "author": "Aaron Gonzalez",
@@ -11,5 +12,15 @@
   "dependencies": {
     "express": "^4.15.2",
     "phaser-ce": "^2.7.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SkeloGH/dragster.git"
   }
 }
