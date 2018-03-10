@@ -9,6 +9,14 @@
 <body>
 
     <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      socket.emit('user.joined', Date.now());
+      socket.on('user.joined', function(msg){
+          console.log(msg);
+        });
+    </script>
     <script type="module" src="/dist/bundle.js"></script>
 </body>
 </html>
