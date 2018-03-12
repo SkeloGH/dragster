@@ -61,10 +61,9 @@ const leave = (uid) => {
         if (source.length > 0) {
           waiting.push(match_room);
           matched.splice(room_idx, 1);
+          io.to(match_room.name).emit('user.disconnected',{uid: uid});
         }
       }
     });
   });
-
-  console.log(uid+' user disconnected');
 };
