@@ -26,6 +26,9 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     leave(uid);
   });
+  socket.on('user.update', function(data){
+    io.to(data.room).emit('user.update', data);
+  });
 });
 
 const join = (uid, socket)=>{
@@ -47,9 +50,12 @@ const join = (uid, socket)=>{
 };
 
 const leave = (uid) => {
+  // - Looks for the room with the given uid (inneficient lookup for now).
+  // - Removes the user from the room.
+  // - Moves the room back to the waiting queue.
   matched.forEach(function(match_room, room_idx){
     match_room.users.forEach(function(user, usr_idx, source){
-      console.log(user, uid);
+
       if(user == uid){
         source.splice(usr_idx, 1);
         if (source.length > 0) {
@@ -61,6 +67,4 @@ const leave = (uid) => {
   });
 
   console.log(uid+' user disconnected');
-  console.log(matched);
-  console.log(waiting);
 };

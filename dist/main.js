@@ -84,8 +84,17 @@ var Game = function Game() {
       game.camera.follow(characters.player.sprite);
     },
     update: function update() {
-      stage.onUpdate(characters.player.sprite.body.x);
+      var player_pos_x = characters.player.sprite.body.x;
+      stage.onUpdate(player_pos_x);
       characters.player.onUpdate(controls);
+      characters.enemy.sprite.position.x = enemy_pos_x;
+      if (!!socket) {
+        socket.emit('user.update', {
+          pos_x: player_pos_x,
+          uid: _uid,
+          room: room_name
+        });
+      }
     },
     render: function render() {
       game.debug.cameraInfo(game.camera, 32, 32);

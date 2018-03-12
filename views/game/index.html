@@ -11,6 +11,7 @@
 	<script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
+		var room_name;
 		var rand = Date.now();
 		var user_name = prompt('User name');
 		var _uid = user_name+('_'+rand).slice(9, 13);
@@ -19,12 +20,20 @@
 				uid: _uid
 			}
 		});
+		var enemy_pos_x;
 
 		socket.on('user.joined', function(data){
-			var room_name  = data.room;
 			var enemy_name = data.id;
+			room_name  = data.room;
 			if (enemy_name != _uid) {
+				// TODO: display info on screen
 				console.log(enemy_name);
+			}
+		});
+
+		socket.on('user.update', function(data){
+			if (data.uid != _uid) {
+				enemy_pos_x = data.pos_x;
 			}
 		});
 	</script>
