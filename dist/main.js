@@ -100,6 +100,7 @@ var Game = function Game() {
       game.debug.cameraInfo(game.camera, 32, 32);
       game.debug.spriteCoords(characters.player.sprite, 32, 500);
       game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+      game.debug.text('Players: ' + [_uid + enemy_name].join(', '), 2, 120, "#00ff00");
       game.debug.text(characters.player.gearbox.current_shift.name, game_cfg.screen_width - 45, 377, "#00ff00");
     }
   });
