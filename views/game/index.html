@@ -16,7 +16,7 @@
 		var user_name = prompt('User name');
 		var _uid = user_name+('_'+rand).slice(9, 13);
 		var enemy_name = '';
-		var socket = io(window.location.origin, {
+		var socket = io(undefined, {
 			query: {
 				uid: _uid
 			}
@@ -34,8 +34,12 @@
 
 		socket.on('user.update', function(data){
 			if (data.uid != _uid) {
+				enemy_name = data.uid;
 				enemy_pos_x = data.pos_x;
 			}
+		});
+		socket.on('user.disconnected', function(data){
+			console.log('user '+data.uid+' disconnected');
 		});
 	</script>
 	<script type="module" src="/dist/bundle.js"></script>
