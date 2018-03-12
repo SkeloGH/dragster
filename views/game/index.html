@@ -15,17 +15,18 @@
 		var rand = Date.now();
 		var user_name = prompt('User name');
 		var _uid = user_name+('_'+rand).slice(9, 13);
+		var enemy_name = '';
 		var socket = io(window.location.origin, {
 			query: {
 				uid: _uid
 			}
 		});
-		var enemy_pos_x;
+		var enemy_pos_x = 0;
 
 		socket.on('user.joined', function(data){
-			var enemy_name = data.id;
 			room_name  = data.room;
-			if (enemy_name != _uid) {
+			if (data.id != _uid) {
+				enemy_name = data.id;
 				// TODO: display info on screen
 				console.log(enemy_name);
 			}

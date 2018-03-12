@@ -46,7 +46,7 @@ const join = (uid, socket)=>{
 
   socket.join(room.name);
   io.to(room.name).emit('user.joined', {id: uid, room: room.name});
-  console.log(uid+' user connected');
+  console.log(uid+' user connected to room '+room.name);
 };
 
 const leave = (uid) => {
