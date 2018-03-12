@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Dragster</title>
-    <link rel="stylesheet" href="/assets/game/css/reset.css">
-    <link rel="stylesheet" href="/assets/game/css/custom.css">
+	<meta charset="UTF-8">
+	<title>Dragster</title>
+	<link rel="stylesheet" href="/assets/game/css/reset.css">
+	<link rel="stylesheet" href="/assets/game/css/custom.css">
 </head>
 <body>
 
-    <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
-      socket.emit('user.joined', Date.now());
-      socket.on('user.joined', function(msg){
-          console.log(msg);
-        });
-    </script>
-    <script type="module" src="/dist/bundle.js"></script>
+	<script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var rand = Date.now();
+		var user_name = prompt('User name');
+		var _uid = user_name+('_'+rand).slice(9, 13);
+		var socket = io(window.location.origin, {
+			query: {
+				uid: _uid
+			}
+		});
+
+		socket.on('user.joined', function(data){
+			var room_name  = data.room;
+			var enemy_name = data.id;
+			if (enemy_name != _uid) {
+				console.log(enemy_name);
+			}
+		});
+	</script>
+	<script type="module" src="/dist/bundle.js"></script>
 </body>
 </html>
