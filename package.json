@@ -12,7 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.15.2",
-    "phaser-ce": "^2.7.5"
+    "phaser-ce": "^2.7.5",
+    "socket.io": "^2.0.4"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
