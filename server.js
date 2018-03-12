@@ -34,6 +34,8 @@ io.on('connection', function(socket){
 const join = (uid, socket)=>{
   let room = {};
 
+  console.log('1. waiting: '+JSON.stringify(waiting));
+  console.log('2. matched: '+JSON.stringify(matched));
   if (waiting.length > 0) {
     room = waiting.pop();
     room.users.push(uid);
@@ -46,7 +48,9 @@ const join = (uid, socket)=>{
 
   socket.join(room.name);
   io.to(room.name).emit('user.joined', {id: uid, room: room.name});
-  console.log(uid+' user connected to room '+room.name);
+  console.log('3. uid: '+uid);
+  console.log('4. room: '+JSON.stringify(room));
+  console.log('5. users: '+room.users);
 };
 
 const leave = (uid) => {
