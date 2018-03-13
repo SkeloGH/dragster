@@ -40,7 +40,9 @@ const join = (uid, socket)=>{
   DBUG.waiting = JSON.stringify(waiting);
 
   if (waiting.length > 0) {
+    waiting.reverse();
     room = waiting.pop();
+    waiting.reverse();
     room.users.push(uid);
     matched.push(room);
   }else{
@@ -55,7 +57,6 @@ const join = (uid, socket)=>{
   DBUG.matched = JSON.stringify(matched);
   DBUG.uid = uid;
   DBUG.room = JSON.stringify(room);
-  DBUG.users = room.users;
   console.log('[DBUG] '+JSON.stringify(DBUG));
   delete DEBUG.join_fn;
 };
@@ -63,6 +64,7 @@ const join = (uid, socket)=>{
 const leave = (uid, socket) => {
   // - Looks for the room with the given uid (inneficient lookup for now).
   DBUG = DEBUG.leave_fn = {};
+  DBUG.u = uid;
 
   matched.forEach(function(match_room, room_idx){
     match_room.users.forEach(function(user, usr_idx){
@@ -80,17 +82,14 @@ const leave = (uid, socket) => {
 
           io.to(match_room.name).emit('user.disconnected',{uid: uid});
 
-          DBUG.exit_data = {
-            u: uid,
-            f: match_room.name,
-            w: waiting,
-            m: matched
-          };
+          DBUG.f = match_room.name;
         }
       }
     });
   });
 
+  DBUG.w = waiting;
+  DBUG.m = matched;
   console.log('[DBUG] '+JSON.stringify(DBUG));
   delete DEBUG.leave_fn;
 };
