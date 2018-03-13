@@ -33,13 +33,14 @@
 		});
 
 		socket.on('user.update', function(data){
-			if (data.uid != _uid) {
-				enemy_name = data.uid;
-				enemy_pos_x = data.pos_x;
+			if (data.u != _uid) {
+				enemy_name = data.u;
+				enemy_pos_x = data.x;
 			}
 		});
-		socket.on('user.disconnected', function(data){
-			console.log('user '+data.uid+' disconnected');
+
+		socket.on('user.disconnected', function(){
+			window.location.reload();
 		});
 	</script>
 	<script type="module" src="/dist/bundle.js"></script>

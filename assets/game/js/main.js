@@ -86,10 +86,11 @@ class Game{
           stage.onUpdate(player_pos_x);
           characters.player.onUpdate(controls);
           characters.enemy.sprite.position.x = enemy_pos_x;
+
           if (!!socket) {
             socket.emit('user.update', {
-              pos_x: player_pos_x,
-              uid: _uid,
+              x: player_pos_x,
+              u: _uid,
               room: room_name
             });
           }
