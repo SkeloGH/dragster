@@ -5,6 +5,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const http_port = process.env.PORT || 3000;
 
+let DEBUG   = {};
 let waiting = [];
 let matched = [];
 
@@ -24,8 +25,9 @@ io.on('connection', function(socket){
   join(uid, socket);
 
   socket.on('disconnect', function(){
-    leave(uid);
+    leave(uid, socket);
   });
+
   socket.on('user.update', function(data){
     io.to(data.room).emit('user.update', data);
   });
@@ -34,8 +36,9 @@ io.on('connection', function(socket){
 const join = (uid, socket)=>{
   let room = {};
 
-  console.log('1. waiting: '+JSON.stringify(waiting));
-  console.log('2. matched: '+JSON.stringify(matched));
+  DBUG = DEBUG.join_fn = {};
+  DBUG.waiting = JSON.stringify(waiting);
+
   if (waiting.length > 0) {
     room = waiting.pop();
     room.users.push(uid);
@@ -48,26 +51,46 @@ const join = (uid, socket)=>{
 
   socket.join(room.name);
   io.to(room.name).emit('user.joined', {id: uid, room: room.name});
-  console.log('3. uid: '+uid);
-  console.log('4. room: '+JSON.stringify(room));
-  console.log('5. users: '+room.users);
+
+  DBUG.matched = JSON.stringify(matched);
+  DBUG.uid = uid;
+  DBUG.room = JSON.stringify(room);
+  DBUG.users = room.users;
+  console.log('[DBUG] '+JSON.stringify(DBUG));
+  delete DEBUG.join_fn;
 };
 
-const leave = (uid) => {
+const leave = (uid, socket) => {
   // - Looks for the room with the given uid (inneficient lookup for now).
-  // - Removes the user from the room.
-  // - Moves the room back to the waiting queue.
+  DBUG = DEBUG.leave_fn = {};
+
   matched.forEach(function(match_room, room_idx){
-    match_room.users.forEach(function(user, usr_idx, source){
+    match_room.users.forEach(function(user, usr_idx){
+      let room_users = match_room.users;
 
       if(user == uid){
-        source.splice(usr_idx, 1);
-        if (source.length > 0) {
+        // - Removes the user from the room.
+        room_users.splice(usr_idx, 1);
+
+        // - If a player has not left
+        if (room_users.length > 0) {
+          // - Moves the room back to the waiting queue.
           waiting.push(match_room);
           matched.splice(room_idx, 1);
+
           io.to(match_room.name).emit('user.disconnected',{uid: uid});
+
+          DBUG.exit_data = {
+            u: uid,
+            f: match_room.name,
+            w: waiting,
+            m: matched
+          };
         }
       }
     });
   });
+
+  console.log('[DBUG] '+JSON.stringify(DBUG));
+  delete DEBUG.leave_fn;
 };
