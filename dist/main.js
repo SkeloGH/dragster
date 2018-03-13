@@ -15,7 +15,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Game = function Game() {
   _classCallCheck(this, Game);
 
-  var controls = null;
+  var controls = void 0;
   var game_cfg = {
     screen_width: window.document.body.scrollWidth,
     screen_height: window.document.body.scrollHeight,
@@ -78,24 +78,18 @@ var Game = function Game() {
 
       game.stage.backgroundColor = '#dedede';
       game.time.advancedTiming = true;
+      game.stage.disableVisibilityChange = true;
 
       game.world.setBounds(0, 0, world.width, world.height);
       game.physics.arcade.enable(characters.player.sprite);
+      game.physics.arcade.enable(characters.enemy.sprite);
       game.camera.follow(characters.player.sprite);
     },
     update: function update() {
-      var player_pos_x = characters.player.sprite.body.x;
+      player_pos_x = characters.player.sprite.body.x;
       stage.onUpdate(player_pos_x);
       characters.player.onUpdate(controls);
-      characters.enemy.sprite.position.x = enemy_pos_x;
-
-      if (!!socket) {
-        socket.emit('user.update', {
-          x: player_pos_x,
-          u: _uid,
-          room: room_name
-        });
-      }
+      characters.enemy.sprite.x = enemy_pos_x;
     },
     render: function render() {
       game.debug.cameraInfo(game.camera, 32, 32);
@@ -105,6 +99,16 @@ var Game = function Game() {
       game.debug.text(characters.player.gearbox.current_shift.name, game_cfg.screen_width - 45, 377, "#00ff00");
     }
   });
+
+  setInterval(function () {
+    if (!!socket) {
+      socket.emit('user.update', {
+        x: player_pos_x,
+        u: _uid,
+        room: room_name
+      });
+    }
+  }, 50);
 };
 
 window.game = new Game();

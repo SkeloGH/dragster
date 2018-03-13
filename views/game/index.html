@@ -13,22 +13,20 @@
 	<script>
 		var room_name;
 		var rand = Date.now();
-		var user_name = prompt('User name');
-		var _uid = user_name+('_'+rand).slice(9, 13);
+		var _uid = (''+rand).slice(9, 13);
 		var enemy_name = '';
 		var socket = io(undefined, {
 			query: {
 				uid: _uid
 			}
 		});
-		var enemy_pos_x = 0;
+		var enemy_pos_x  = 0;
+		var player_pos_x = 0;
 
 		socket.on('user.joined', function(data){
 			room_name  = data.room;
 			if (data.id != _uid) {
 				enemy_name = data.id;
-				// TODO: display info on screen
-				console.log(enemy_name);
 			}
 		});
 
@@ -36,6 +34,7 @@
 			if (data.u != _uid) {
 				enemy_name = data.u;
 				enemy_pos_x = data.x;
+				enemy_vel_x = data.v;
 			}
 		});
 

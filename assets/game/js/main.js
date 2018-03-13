@@ -8,14 +8,14 @@ import {Gearbox} from './gearbox.js';
 
 class Game{
   constructor(){
-    var controls    = null;
-    var game_cfg    = {
+    let controls;
+    let game_cfg     = {
       screen_width: window.document.body.scrollWidth,
       screen_height: window.document.body.scrollHeight,
       renderer: Phaser.AUTO,
       element: '',
     };
-    var players_cfg = {
+    let players_cfg = {
       main: {
         car_sprite: '/assets/game/img/cars/phantom/car.png',
         max_gears: 6,
@@ -27,14 +27,14 @@ class Game{
         max_speed: Utils.kmHrToPxSec(150),
       }
     };
-    var stage       = new DragStrip({
+    let stage       = new DragStrip({
       world: {
         width: Utils.metersToPx(402.34),
         height: 512,
         background: '/assets/game/img/bg/dragstrip.png'
       }
     });
-    var characters  = {
+    let characters  = {
       player: new PlayerCar({
         gearbox: new Gearbox({
           max_gears: players_cfg.main.max_gears,
@@ -50,7 +50,7 @@ class Game{
         max_speed: players_cfg.enemy.max_speed
       })
     };
-    var game        = new Phaser.Game(
+    let game        = new Phaser.Game(
       game_cfg.screen_width,
       game_cfg.screen_height,
       game_cfg.renderer,
@@ -62,13 +62,13 @@ class Game{
           game.load.image('enemy__car', players_cfg.enemy.car_sprite);
         },
         create: function createStage() {
-          var start_x        = 0;
-          var main_player_y  = 377;
-          var enemy_player_y = 239;
-          var world          = stage.config.world;
-          var main_player    = players_cfg.main;
-          var enemy_player   = players_cfg.enemy;
-          var background     = game.add.tileSprite(0, 0, world.width, world.height, 'stage__bg');
+          let start_x        = 0;
+          let main_player_y  = 377;
+          let enemy_player_y = 239;
+          let world          = stage.config.world;
+          let main_player    = players_cfg.main;
+          let enemy_player   = players_cfg.enemy;
+          let background     = game.add.tileSprite(0, 0, world.width, world.height, 'stage__bg');
 
           controls                 = game.input.keyboard.createCursorKeys();
           characters.player.sprite = game.add.sprite(start_x, main_player_y, 'player__car');
@@ -76,24 +76,18 @@ class Game{
 
           game.stage.backgroundColor = '#dedede';
           game.time.advancedTiming   = true;
+          game.stage.disableVisibilityChange = true;
 
           game.world.setBounds(0, 0, world.width, world.height);
           game.physics.arcade.enable(characters.player.sprite);
+          game.physics.arcade.enable(characters.enemy.sprite);
           game.camera.follow(characters.player.sprite);
         },
         update: function update() {
-          var player_pos_x = characters.player.sprite.body.x;
+          player_pos_x = characters.player.sprite.body.x;
           stage.onUpdate(player_pos_x);
           characters.player.onUpdate(controls);
-          characters.enemy.sprite.position.x = enemy_pos_x;
-
-          if (!!socket) {
-            socket.emit('user.update', {
-              x: player_pos_x,
-              u: _uid,
-              room: room_name
-            });
-          }
+          characters.enemy.sprite.x = enemy_pos_x;
         },
         render: function render(){
           game.debug.cameraInfo(game.camera, 32, 32);
@@ -105,7 +99,18 @@ class Game{
             377,
             "#00ff00");
         }
-      });
+      }
+    );
+
+    setInterval(function(){
+      if (!!socket) {
+        socket.emit('user.update', {
+          x: player_pos_x,
+          u: _uid,
+          room: room_name
+        });
+      }
+    }, 50);
   }
 }
 
