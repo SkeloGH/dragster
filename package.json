@@ -2,7 +2,7 @@
   "name": "dragster",
   "version": "0.0.1",
   "description": "A drag racing game based on phaser.js, running on node.",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "build": "babel assets/game/js -d dist && npx webpack --config webpack.config.js",
     "test": "echo \"No tests defined, yet\"",
