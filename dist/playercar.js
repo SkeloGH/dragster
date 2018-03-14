@@ -1,4 +1,5 @@
 /*jshint esversion: 6*/
+/*jshint asi: true*/
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13,11 +14,13 @@ var PlayerCar = exports.PlayerCar = function () {
   function PlayerCar(config) {
     _classCallCheck(this, PlayerCar);
 
-    this.sprite = config.sprite;
-    this.max_speed = config.max_speed;
-    this.gearbox = config.gearbox;
+    Object.keys(config).forEach(function (key) {
+      return config.propertyIsEnumerable(key) ? this[key] = config[key] : false;
+    }.bind(this));
+
     this.max_speed_rwd = -1400; // px/sec
     this.max_accel_rwd = -150;
+
     return this;
   }
 
