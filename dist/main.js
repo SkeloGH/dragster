@@ -176,4 +176,4 @@ var Game = function () {
 
 var io = window.io;
 var Phaser = window.Phaser;
-window.App = new Game(io).connect().broadcastLoop().start();
+window.App = new Game(io).connect().broadcastLoop(30).start();

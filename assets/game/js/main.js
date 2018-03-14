@@ -168,4 +168,4 @@ class Game{
 
 let io     = window.io
 let Phaser = window.Phaser
-window.App = new Game(io).connect().broadcastLoop().start()
+window.App = new Game(io).connect().broadcastLoop(30).start()
