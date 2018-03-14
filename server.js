@@ -28,7 +28,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('user.update', function(data){
-    io.to(data.room).emit('user.update', { x: data.x, u: data.u });
+    io.to(data.room).emit('user.update', data);
   });
 
   console.log({matched: matched.length, waiting: waiting.length});
